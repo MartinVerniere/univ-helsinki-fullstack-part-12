@@ -62,3 +62,6 @@ typings/
 
 # MongoDB data directory
 todo-app/todo-backend/mongo_data/
+
+# Redis data directory
+todo-app/todo-backend/redis_data/
