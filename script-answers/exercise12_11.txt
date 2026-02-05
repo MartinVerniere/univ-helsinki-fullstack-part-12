@@ -1,0 +1,20 @@
+cd todo-app/todo-backend
+Terminal 1:
+- docker ps
+- npm run dev
+Terminal 2:
+- Invoke-RestMethod -Uri http://localhost:3000/todos -Method POST -ContentType "application/json" -Body '{"text":"Learn Docker and Redis"}'
+- exit
+
+Terminal 1:
+- CTRL-C
+- docker exec -it todo-backend-redis-1 redis-cli
+- > KEYS *
+- > GET added_todos
+- > SET added_todos 9001
+
+Terminal 2:
+- $env:REDIS_URL="redis://localhost:6379" $env:MONGO_URL="mongodb://root:example@localhost:3456/the_database?authSource=admin" npm run dev 
+
+Terminal 1:
+- DEL added_todos
