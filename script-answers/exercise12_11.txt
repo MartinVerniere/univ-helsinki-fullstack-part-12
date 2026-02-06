@@ -14,7 +14,7 @@ Terminal 1:
 - > SET added_todos 9001
 
 Terminal 2:
-- $env:REDIS_URL="redis://localhost:6379" $env:MONGO_URL="mongodb://root:example@localhost:3456/the_database?authSource=admin" npm run dev 
+- $env:REDIS_URL="redis://localhost:6379"; $env:MONGO_URL="mongodb://root:example@localhost:3456/the_database?authSource=admin"; npm run dev
 
 Terminal 1:
 - DEL added_todos
