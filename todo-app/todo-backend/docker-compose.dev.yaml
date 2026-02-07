@@ -10,6 +10,7 @@ services:
     volumes:
       - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
       - ./mongo_data:/data/db
+    container_name: todo-app-mongo(backend)
   redis:
     image: redis:alpine
     ports:
@@ -17,6 +18,7 @@ services:
     command: ["redis-server", "--appendonly", "yes"] # Overwrite the CMD
     volumes: # Declare the volume
       - ./redis_data:/data
+    container_name: todo-app-redis(backend)
   server:
     build:
       context: . # The context will pick this directory as the "build context"
