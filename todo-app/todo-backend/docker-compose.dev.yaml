@@ -17,3 +17,15 @@ services:
     command: ["redis-server", "--appendonly", "yes"] # Overwrite the CMD
     volumes: # Declare the volume
       - ./redis_data:/data
+  server:
+    build:
+      context: . # The context will pick this directory as the "build context"
+      dockerfile: dev.Dockerfile # This will simply tell which dockerfile to read
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - 3000:3000
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/the_database?authSource=admin
+      REDIS_URL: redis://redis:6379
+    container_name: todo-app-backend-dev
