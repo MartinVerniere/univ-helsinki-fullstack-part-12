@@ -6,12 +6,49 @@ services:
     volumes:
       - ./todo-frontend:/usr/src/app # The path can be relative, so ./ is enough to say "the same location as the docker-compose.yml"
       - /usr/src/app/node_modules
-    ports:
-      - 5173:5173
-    container_name: todo-app-frontend-dev # This will name the container todo-app-frontend-dev
+    container_name: todo-app-frontend-container # This will name the container todo-app-frontend-container
     environment:
-      - VITE_BACKEND_URL=http://localhost:3000
+      - VITE_BACKEND_URL=http://localhost:8080/api
       - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - todo-backend
+
+  todo-backend:
+    build:
+      context: ./todo-backend
+      dockerfile: dev.Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./todo-backend:/usr/src/app
+      - /usr/src/app/node_modules
+    container_name: todo-app-backend-container # This will name the container todo-app-backend-container
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/the_database?authSource=admin
+      REDIS_URL: redis://redis:6379
+
+  mongo:
+    image: mongo
+    ports:
+      - 3456:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: the_database
+    volumes:
+      - ./todo-backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - mongo_data:/data/db
+    container_name: todo-app-backend-mongo
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    command: ["redis-server", "--appendonly", "yes"] # Overwrite the CMD
+    volumes: # Declare the volume
+      - redis_data:/data
+    container_name: todo-app-backend-redis
+
   nginx:
     image: nginx:1.20.1
     volumes:
@@ -21,3 +58,8 @@ services:
     container_name: reverse-proxy
     depends_on:
       - todo-frontend # wait for the frontend container to be started
+      - todo-backend
+
+volumes:
+  redis_data:
+  mongo_data:
