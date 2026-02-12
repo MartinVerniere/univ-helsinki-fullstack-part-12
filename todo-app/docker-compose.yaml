@@ -1,0 +1,50 @@
+services:
+  todo-frontend:
+    build:
+      context: ./todo-frontend # The context will pick this directory as the "build context"
+      dockerfile: Dockerfile # This will simply tell which dockerfile to read
+    container_name: todo-app-frontend-prod-container # This will name the container todo-app-frontend-container
+    depends_on:
+      - todo-backend
+
+  todo-backend:
+    build:
+      context: ./todo-backend
+      dockerfile: Dockerfile
+    container_name: todo-app-backend-prod-container # This will name the container todo-app-backend-container
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/the_database?authSource=admin
+      REDIS_URL: redis://redis:6379
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: the_database
+    volumes:
+      - ./todo-backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - mongo_data:/data/db
+    container_name: todo-app-backend-prod-mongo
+
+  redis:
+    image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"] # Overwrite the CMD
+    volumes: # Declare the volume
+      - redis_data:/data
+    container_name: todo-app-backend-prod-redis
+
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: reverse-proxy-prod
+    depends_on:
+      - todo-frontend # wait for the frontend container to be started
+      - todo-backend
+
+volumes:
+  redis_data:
+  mongo_data:
