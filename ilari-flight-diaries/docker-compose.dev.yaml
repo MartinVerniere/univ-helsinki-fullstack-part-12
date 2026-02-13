@@ -1,0 +1,26 @@
+services:
+  ilari-flights-backend:
+    build:
+      context: ./backend
+      dockerfile: dev.Dockerfile
+    container_name: ilari-flights-backend-container
+
+  ilari-flights-frontend:
+    build:
+      context: ./frontend
+      dockerfile: dev.Dockerfile
+    container_name: ilari-flights-frontend-container 
+    environment:
+      - VITE_API_BASE_URL=/api
+      - CHOKIDAR_USEPOLLING=true
+
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: reverse-proxy
+    depends_on:
+      - ilari-flights-frontend
+      - ilari-flights-backend
