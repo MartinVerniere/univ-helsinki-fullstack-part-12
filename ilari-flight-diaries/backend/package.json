@@ -8,7 +8,8 @@
 		"tsc": "tsc",
 		"dev": "ts-node-dev src/index.ts",
 		"lint": "eslint .",
-		"start": "node build/index.js"
+		"build": "tsc",
+		"start": "node build/src/index.js"
 	},
 	"author": "Martin Verniere",
 	"license": "ISC",
